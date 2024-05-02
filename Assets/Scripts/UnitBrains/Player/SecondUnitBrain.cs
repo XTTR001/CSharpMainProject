@@ -18,15 +18,16 @@ namespace UnitBrains.Player
             float overheatTemperature = OverheatTemperature;
             ///////////////////////////////////////
             // Homework 1.3 (1st block, 3rd module)
-            ///////////////////////////////////////           
-           
-            if (GetTemperature() >= overheatTemperature)
+            ///////////////////////////////////////
+            
+            int currentTemperature = GetTemperature();
+            if (currentTemperature >= overheatTemperature)
             {
                 return;
             }
 
             var projectile = CreateProjectile(forTarget);
-            for(float projectileCount = 0; projectileCount <= GetTemperature(); projectileCount++)
+            for(float projectileCount = 0; projectileCount <= currentTemperature; projectileCount++)
             {   
                 AddProjectileToList(projectile, intoList);
             }
@@ -45,9 +46,26 @@ namespace UnitBrains.Player
             // Homework 1.4 (1st block, 4rd module)
             ///////////////////////////////////////
             List<Vector2Int> result = GetReachableTargets();
-            while (result.Count > 1)
+            if (result.Count > 0)
             {
-                result.RemoveAt(result.Count - 1);
+                float minDistanceToOwnBase = float.MaxValue;
+                Vector2Int mainTarget = result[0];
+
+                foreach (Vector2Int target in result)
+                {
+                    float targetDistanceToOwnBase = DistanceToOwnBase(target);
+
+                    if (targetDistanceToOwnBase < minDistanceToOwnBase)
+                    {
+                        minDistanceToOwnBase = targetDistanceToOwnBase;
+                        mainTarget = target;
+                    }
+
+                }
+
+                result.Clear();
+                result.Add(mainTarget);
+
             }
             return result;
             ///////////////////////////////////////
