@@ -19,8 +19,18 @@ namespace UnitBrains.Player
             ///////////////////////////////////////
             // Homework 1.3 (1st block, 3rd module)
             ///////////////////////////////////////           
+           
+            if (GetTemperature() >= overheatTemperature)
+            {
+                return;
+            }
+
             var projectile = CreateProjectile(forTarget);
-            AddProjectileToList(projectile, intoList);
+            for(float projectileCount = 0; projectileCount <= GetTemperature(); projectileCount++)
+            {   
+                AddProjectileToList(projectile, intoList);
+            }
+            IncreaseTemperature();
             ///////////////////////////////////////
         }
 
