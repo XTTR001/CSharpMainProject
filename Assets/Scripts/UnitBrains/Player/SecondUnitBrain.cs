@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Codice.CM.Triggers;
 using Model;
@@ -56,15 +57,15 @@ namespace UnitBrains.Player
             UnreachableTargets.Clear();
             
             List<Vector2Int> result = new List<Vector2Int>();            
-            Vector2Int mainTarget = GetNearestTarget(GetAllTargets().ToList());
+            TargetInfo mainTarget = GetNearestTarget(GetAllTargets().ToList());
 
-            if (mainTarget.magnitude != 0) 
+            if (mainTarget.Distance < float.MaxValue) 
             {
-                UnreachableTargets.Add(mainTarget);
+                UnreachableTargets.Add(mainTarget.Target);
 
-                if (IsTargetInRange(mainTarget))
+                if (IsTargetInRange(mainTarget.Target))
                 {
-                    result.Add(mainTarget);
+                    result.Add(mainTarget.Target);
                 }
 
             }
@@ -76,7 +77,7 @@ namespace UnitBrains.Player
             return result;
         }
 
-        private Vector2Int GetNearestTarget(List<Vector2Int> targets)
+        private TargetInfo GetNearestTarget(List<Vector2Int> targets)
         {
             float minDistanceToOwnBase = float.MaxValue;
             Vector2Int mainTarget = Vector2Int.zero;
@@ -93,7 +94,9 @@ namespace UnitBrains.Player
 
             }
 
-            return minDistanceToOwnBase < float.MaxValue ? mainTarget : Vector2Int.zero;
+            TargetInfo targetInfo = new TargetInfo(mainTarget, minDistanceToOwnBase);
+
+            return targetInfo;
         }
 
         private Vector2Int GetEnemyBase()
@@ -126,6 +129,22 @@ namespace UnitBrains.Player
         {
             _temperature += 1f;
             if (_temperature >= OverheatTemperature) _overheated = true;
+        }
+
+        [Serializable]
+        public class TargetInfo
+        {
+            private Vector2Int _target;
+            private float _distanceToTarget;
+
+            public Vector2Int Target => _target;
+            public float Distance => _distanceToTarget;
+
+            public TargetInfo(Vector2Int target, float distanceTotarget)
+            {
+                _target = target;
+                _distanceToTarget = distanceTotarget;
+            }
         }
     }
 }
